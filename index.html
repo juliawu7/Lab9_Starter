@@ -166,10 +166,12 @@
             console.table([{ name: 'Julia', age: 21 }, { name: 'Isabella', age: 12 }]);
             break;
           case 'start-timer-btn':
-            console.time('My timer start');
+            console.time(timerName = 'timer');
+            console.log('Timer started');
             break;
           case 'end-timer-btn':
-            console.timeEnd('My timer end');
+            console.timeEnd(timerName);
+            console.log('Timer ended');
             break;
           case 'trace-btn':
             console.trace('Trace button clicked');
