@@ -6,6 +6,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 9</title>
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({
+      token: "015974471a8343b7a671b37d5a215358"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>
 
   <style>
     button {
@@ -69,25 +76,31 @@
     </form>
 
     <section id="error-btns">
-      <button>Console Log</button>
-      <button>Console Error</button>
-      <button>Console Count</button>
-      <button>Console Warn</button>
-      <button>Console Assert</button>
-      <button>Console Clear</button>
-      <button>Console Dir</button>
-      <button>Console dirxml</button>
-      <button>Console Group Start</button>
-      <button>Console Group End</button>
-      <button>Console Table</button>
-      <button>Start Timer</button>
-      <button>End Timer</button>
-      <button>Console Trace</button>
-      <button>Trigger a Global Error</button>
+      <button id="log-btn">Console Log</button>
+      <button id="error-btn">Console Error</button>
+      <button id="count-btn">Console Count</button>
+      <button id="warn-btn">Console Warn</button>
+      <button id="assert-btn">Console Assert</button>
+      <button id="clear-btn">Console Clear</button>
+      <button id="dir-btn">Console Dir</button>
+      <button id="dirxml-btn">Console dirxml</button>
+      <button id="group-start-btn">Console Group Start</button>
+      <button id="group-end-btn">Console Group End</button>
+      <button id="table-btn">Console Table</button>
+      <button id="start-timer-btn">Start Timer</button>
+      <button id="end-timer-btn">End Timer</button>
+      <button id="trace-btn">Console Trace</button>
+      <button id="global-error-btn">Trigger a Global Error</button>
     </section>
   </main>
 
   <script>
+    class CalculationError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "CalculationError";
+      }
+    }
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
@@ -95,13 +108,83 @@
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      // output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      try {
+        if (firstNum === '' || secondNum === '') {
+          throw new CalculationError('Both numbers required');
+        }
+        if (operator === '/' && secondNum === '0') {
+          throw new CalculationError('Cannot divide by 0');
+        }
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      } catch (error) {
+        console.error('Error:', error.message);
+      } finally {
+        console.log('Calculation attempted');
+      }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     // Start your code here
     // You may move this JS to another file if you wish
+    errorBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        switch (btn.id) {
+          case 'log-btn':
+            console.log('Console log message');
+            break;
+          case 'error-btn':
+            console.error('Console error message');
+            break;
+          case 'count-btn':
+            console.count('Count button clicked');
+            break;
+          case 'warn-btn':
+            console.warn('Console warning message');
+            break;
+          case 'assert-btn':
+            console.assert(false, 'Console assert message false');
+            break;
+          case 'clear-btn':
+            console.clear();
+            break;
+          case 'dir-btn':
+            console.dir(document.querySelector('output'));
+            break;
+          case 'dirxml-btn':
+            console.dirxml(document.querySelector('output'));
+            break;
+          case 'group-start-btn':
+            console.group('My group');
+            console.log('Console log inside group');
+            break;
+          case 'group-end-btn':
+            console.groupEnd();
+            break;
+          case 'table-btn':
+            console.table([{ name: 'Julia', age: 21 }, { name: 'Isabella', age: 12 }]);
+            break;
+          case 'start-timer-btn':
+            console.time('My timer start');
+            break;
+          case 'end-timer-btn':
+            console.timeEnd('My timer end');
+            break;
+          case 'trace-btn':
+            console.trace('Trace button clicked');
+            break;
+          case 'global-error-btn':
+            nonExistent();
+            break;
+        }
+      });
+    });
+    window.onerror = function (message, source, lineno, colno, error) {
+      console.error(`Global error caught: ${message} at ${source}:${lineno}:${colno}`);
+      return true;
+    };
+    TrackJS.track('Testing TrackJS!');
   </script>
 </body>
 
